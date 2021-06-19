@@ -1,4 +1,4 @@
-package ggconstants
+package ggevent
 
 type MouseButtonCode int
 

@@ -2,8 +2,6 @@ package ggevent
 
 import (
 	"fmt"
-
-	"github.com/oyberntzen/gogame/ggconstants"
 )
 
 type MouseMovedEvent struct {
@@ -20,12 +18,12 @@ type MouseScrolledEvent struct {
 
 type MouseButtonPressedEvent struct {
 	handled     bool
-	mouseButton ggconstants.MouseButtonCode
+	mouseButton MouseButtonCode
 }
 
 type MouseButtonReleasedEvent struct {
 	handled     bool
-	mouseButton ggconstants.MouseButtonCode
+	mouseButton MouseButtonCode
 }
 
 func NewMouseMovedEvent(mouseX, mouseY float32) *MouseMovedEvent {
@@ -68,7 +66,7 @@ func (event *MouseScrolledEvent) SetHandled()      { event.handled = true }
 func (event *MouseScrolledEvent) OffsetX() float32 { return event.offsetX }
 func (event *MouseScrolledEvent) OffsetY() float32 { return event.offsetY }
 
-func NewMouseButtonPressedEvent(mouseButton ggconstants.MouseButtonCode) *MouseButtonPressedEvent {
+func NewMouseButtonPressedEvent(mouseButton MouseButtonCode) *MouseButtonPressedEvent {
 	return &MouseButtonPressedEvent{handled: false, mouseButton: mouseButton}
 }
 
@@ -85,11 +83,11 @@ func (event *MouseButtonPressedEvent) IsInCategory(category EventCategory) bool 
 }
 func (event *MouseButtonPressedEvent) IsHandled() bool { return event.handled }
 func (event *MouseButtonPressedEvent) SetHandled()     { event.handled = true }
-func (event *MouseButtonPressedEvent) MouseButton() ggconstants.MouseButtonCode {
+func (event *MouseButtonPressedEvent) MouseButton() MouseButtonCode {
 	return event.mouseButton
 }
 
-func NewMouseButtonReleasedEvent(mouseButton ggconstants.MouseButtonCode) *MouseButtonReleasedEvent {
+func NewMouseButtonReleasedEvent(mouseButton MouseButtonCode) *MouseButtonReleasedEvent {
 	return &MouseButtonReleasedEvent{handled: false, mouseButton: mouseButton}
 }
 
@@ -106,6 +104,6 @@ func (event *MouseButtonReleasedEvent) IsInCategory(category EventCategory) bool
 }
 func (event *MouseButtonReleasedEvent) IsHandled() bool { return event.handled }
 func (event *MouseButtonReleasedEvent) SetHandled()     { event.handled = true }
-func (event *MouseButtonReleasedEvent) MouseButton() ggconstants.MouseButtonCode {
+func (event *MouseButtonReleasedEvent) MouseButton() MouseButtonCode {
 	return event.mouseButton
 }

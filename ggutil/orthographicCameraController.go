@@ -3,7 +3,6 @@ package ggutil
 import (
 	"github.com/EngoEngine/glm"
 	"github.com/EngoEngine/math"
-	"github.com/oyberntzen/gogame/ggconstants"
 	"github.com/oyberntzen/gogame/ggcore"
 	"github.com/oyberntzen/gogame/ggevent"
 	"github.com/oyberntzen/gogame/ggrenderer"
@@ -34,31 +33,33 @@ func NewOrthographicCameraController(aspectRatio float32, rotation bool) *Orthog
 }
 
 func (controller *OrthographicCameraController) OnUpdate(ts ggcore.Timestep) {
-	if ggcore.IsKeyPressed(ggconstants.KeyA) {
-		controller.cameraPosition[0] -= controller.cameraTranslationSpeed * ts.GetSeconds()
+	if ggcore.IsKeyPressed(ggevent.KeyA) {
+		controller.cameraPosition[0] -= math.Cos(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
+		controller.cameraPosition[1] -= math.Sin(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
 	}
-	if ggcore.IsKeyPressed(ggconstants.KeyD) {
-		controller.cameraPosition[0] += controller.cameraTranslationSpeed * ts.GetSeconds()
+	if ggcore.IsKeyPressed(ggevent.KeyD) {
+		controller.cameraPosition[0] += math.Cos(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
+		controller.cameraPosition[1] += math.Sin(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
 	}
-	if ggcore.IsKeyPressed(ggconstants.KeyW) {
-		controller.cameraPosition[1] += controller.cameraTranslationSpeed * ts.GetSeconds()
+	if ggcore.IsKeyPressed(ggevent.KeyW) {
+		controller.cameraPosition[0] -= math.Sin(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
+		controller.cameraPosition[1] += math.Cos(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
 	}
-	if ggcore.IsKeyPressed(ggconstants.KeyS) {
-		controller.cameraPosition[1] -= controller.cameraTranslationSpeed * ts.GetSeconds()
+	if ggcore.IsKeyPressed(ggevent.KeyS) {
+		controller.cameraPosition[0] += math.Sin(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
+		controller.cameraPosition[1] -= math.Cos(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
 	}
 	if controller.rotation {
-		if ggcore.IsKeyPressed(ggconstants.KeyQ) {
+		if ggcore.IsKeyPressed(ggevent.KeyQ) {
 			controller.cameraRotation += controller.cameraRotationSpeed * ts.GetSeconds()
 		}
-		if ggcore.IsKeyPressed(ggconstants.KeyE) {
+		if ggcore.IsKeyPressed(ggevent.KeyE) {
 			controller.cameraRotation -= controller.cameraRotationSpeed * ts.GetSeconds()
 		}
 		controller.camera.SetRotation(controller.cameraRotation)
 	}
 
 	controller.camera.SetPosition(&controller.cameraPosition)
-
-	controller.cameraTranslationSpeed = controller.zoomLevel
 }
 
 func (controller *OrthographicCameraController) OnEvent(event ggevent.Event) {

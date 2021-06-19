@@ -4,16 +4,16 @@ package ggcore
 
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/oyberntzen/gogame/ggconstants"
+	"github.com/oyberntzen/gogame/ggevent"
 )
 
-func IsKeyPressed(keycode ggconstants.KeyCode) bool {
+func IsKeyPressed(keycode ggevent.KeyCode) bool {
 	window := (*glfw.Window)(GetApp().GetWindow().GetNativeWindow())
 	state := window.GetKey(glfw.Key(keycode))
 	return state == glfw.Press || state == glfw.Repeat
 }
 
-func IsMouseButtonPressed(button ggconstants.MouseButtonCode) bool {
+func IsMouseButtonPressed(button ggevent.MouseButtonCode) bool {
 	window := (*glfw.Window)(GetApp().GetWindow().GetNativeWindow())
 	state := window.GetMouseButton(glfw.MouseButton(button))
 	return state == glfw.Press

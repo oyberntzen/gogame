@@ -2,19 +2,17 @@ package ggevent
 
 import (
 	"fmt"
-
-	"github.com/oyberntzen/gogame/ggconstants"
 )
 
 type KeyPressedEvent struct {
 	handled     bool
-	keyCode     ggconstants.KeyCode
+	keyCode     KeyCode
 	repeatCount int
 }
 
 type KeyReleasedEvent struct {
 	handled bool
-	keyCode ggconstants.KeyCode
+	keyCode KeyCode
 }
 
 type KeyTypedEvent struct {
@@ -22,7 +20,7 @@ type KeyTypedEvent struct {
 	character rune
 }
 
-func NewKeyPressedEvent(keyCode ggconstants.KeyCode, repeatCount int) *KeyPressedEvent {
+func NewKeyPressedEvent(keyCode KeyCode, repeatCount int) *KeyPressedEvent {
 	return &KeyPressedEvent{handled: false, keyCode: keyCode, repeatCount: repeatCount}
 }
 
@@ -37,12 +35,12 @@ func (event *KeyPressedEvent) String() string {
 func (event *KeyPressedEvent) IsInCategory(category EventCategory) bool {
 	return event.GetCategoryFlags()&category > 0
 }
-func (event *KeyPressedEvent) IsHandled() bool              { return event.handled }
-func (event *KeyPressedEvent) SetHandled()                  { event.handled = true }
-func (event *KeyPressedEvent) KeyCode() ggconstants.KeyCode { return event.keyCode }
-func (event *KeyPressedEvent) RepeatCount() int             { return event.repeatCount }
+func (event *KeyPressedEvent) IsHandled() bool  { return event.handled }
+func (event *KeyPressedEvent) SetHandled()      { event.handled = true }
+func (event *KeyPressedEvent) KeyCode() KeyCode { return event.keyCode }
+func (event *KeyPressedEvent) RepeatCount() int { return event.repeatCount }
 
-func NewKeyReleasedEvent(keyCode ggconstants.KeyCode) *KeyReleasedEvent {
+func NewKeyReleasedEvent(keyCode KeyCode) *KeyReleasedEvent {
 	return &KeyReleasedEvent{handled: false, keyCode: keyCode}
 }
 
@@ -57,9 +55,9 @@ func (event *KeyReleasedEvent) String() string {
 func (event *KeyReleasedEvent) IsInCategory(category EventCategory) bool {
 	return event.GetCategoryFlags()&category > 0
 }
-func (event *KeyReleasedEvent) IsHandled() bool              { return event.handled }
-func (event *KeyReleasedEvent) SetHandled()                  { event.handled = true }
-func (event *KeyReleasedEvent) KeyCode() ggconstants.KeyCode { return event.keyCode }
+func (event *KeyReleasedEvent) IsHandled() bool  { return event.handled }
+func (event *KeyReleasedEvent) SetHandled()      { event.handled = true }
+func (event *KeyReleasedEvent) KeyCode() KeyCode { return event.keyCode }
 
 func NewKeyTypedEvent(character rune) *KeyTypedEvent {
 	return &KeyTypedEvent{handled: false, character: character}

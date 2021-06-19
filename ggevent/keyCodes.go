@@ -1,4 +1,4 @@
-package ggconstants
+package ggevent
 
 type KeyCode int
 

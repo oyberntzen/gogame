@@ -7,7 +7,6 @@ import (
 	"unsafe"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/oyberntzen/gogame/ggconstants"
 	"github.com/oyberntzen/gogame/ggcore"
 	"github.com/oyberntzen/gogame/ggevent"
 	"github.com/oyberntzen/gogame/ggrenderer"
@@ -138,17 +137,17 @@ func (window *WindowsWindow) init(props ggcore.WindowProps) {
 		switch action {
 		case glfw.Press:
 			{
-				event := ggevent.NewKeyPressedEvent(ggconstants.KeyCode(key), 0)
+				event := ggevent.NewKeyPressedEvent(ggevent.KeyCode(key), 0)
 				data.EventCallbackFunc(event)
 			}
 		case glfw.Release:
 			{
-				event := ggevent.NewKeyReleasedEvent(ggconstants.KeyCode(key))
+				event := ggevent.NewKeyReleasedEvent(ggevent.KeyCode(key))
 				data.EventCallbackFunc(event)
 			}
 		case glfw.Repeat:
 			{
-				event := ggevent.NewKeyPressedEvent(ggconstants.KeyCode(key), 1)
+				event := ggevent.NewKeyPressedEvent(ggevent.KeyCode(key), 1)
 				data.EventCallbackFunc(event)
 			}
 		}
@@ -167,12 +166,12 @@ func (window *WindowsWindow) init(props ggcore.WindowProps) {
 		switch action {
 		case glfw.Press:
 			{
-				event := ggevent.NewMouseButtonPressedEvent(ggconstants.MouseButtonCode(button))
+				event := ggevent.NewMouseButtonPressedEvent(ggevent.MouseButtonCode(button))
 				data.EventCallbackFunc(event)
 			}
 		case glfw.Release:
 			{
-				event := ggevent.NewMouseButtonReleasedEvent(ggconstants.MouseButtonCode(button))
+				event := ggevent.NewMouseButtonReleasedEvent(ggevent.MouseButtonCode(button))
 				data.EventCallbackFunc(event)
 			}
 		}
