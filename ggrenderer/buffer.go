@@ -41,15 +41,15 @@ type VertexBuffer interface {
 	Delete()
 	Bind()
 	Unbind()
-	SetLayout(*BufferLayout)
-	GetLayout() *BufferLayout
+	SetLayout(layout *BufferLayout)
+	GetLayout() (layout *BufferLayout)
 }
 
 type IndexBuffer interface {
 	Delete()
 	Bind()
 	Unbind()
-	GetCount() uint32
+	GetCount() (count uint32)
 }
 
 func ShaderDataTypeSize(dataType ShaderDataType) uint32 {

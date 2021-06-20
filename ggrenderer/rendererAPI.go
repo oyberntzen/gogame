@@ -10,10 +10,10 @@ import (
 
 type RendererAPI interface {
 	Init()
-	SetClearColor(*glm.Vec4)
+	SetClearColor(color *glm.Vec4)
 	Clear()
-	DrawIndexed(VertexArray)
-	SetViewport(uint32, uint32, uint32, uint32)
+	DrawIndexed(vertexArray VertexArray)
+	SetViewport(x uint32, y uint32, width uint32, height uint32)
 }
 
 type API int
@@ -54,6 +54,8 @@ func newOpenGLRendererAPI() *openGLRendererAPI {
 func (rendererAPI *openGLRendererAPI) Init() {
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	gl.Enable(gl.DEPTH_TEST)
 }
 
 func (rendererAPI *openGLRendererAPI) SetClearColor(color *glm.Vec4) {

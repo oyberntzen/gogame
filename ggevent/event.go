@@ -37,7 +37,7 @@ type Event interface {
 	GetName() string
 	GetCategoryFlags() EventCategory
 	String() string
-	IsInCategory(EventCategory) bool
+	IsInCategory(category EventCategory) bool
 	IsHandled() bool
 	SetHandled()
 }

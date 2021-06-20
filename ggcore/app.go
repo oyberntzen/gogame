@@ -1,8 +1,8 @@
 package ggcore
 
 type App interface {
-	PushLayer(Layer)
-	PushOverlay(Layer)
+	PushLayer(layer Layer)
+	PushOverlay(layer Layer)
 	GetWindow() Window
 }
 

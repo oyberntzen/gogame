@@ -17,7 +17,7 @@ type Shader interface {
 	Delete()
 	Bind()
 	Unbind()
-	GetName() string
+	GetName() (name string)
 }
 
 func NewShaderFromSrc(name, vertexSrc, fragmentSrc string) Shader {

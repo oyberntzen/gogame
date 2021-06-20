@@ -11,10 +11,10 @@ type VertexArray interface {
 	Delete()
 	Bind()
 	Unbind()
-	AddVertexBuffer(VertexBuffer)
-	SetIndexBuffer(IndexBuffer)
-	GetVertexBuffers() []VertexBuffer
-	GetIndexBuffer() IndexBuffer
+	AddVertexBuffer(vertexBuffer VertexBuffer)
+	SetIndexBuffer(indexBuffer IndexBuffer)
+	GetVertexBuffers() (vertexBuffers []VertexBuffer)
+	GetIndexBuffer() (indexBuffer IndexBuffer)
 }
 
 func NewVertexArray() VertexArray {

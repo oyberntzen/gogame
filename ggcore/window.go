@@ -17,8 +17,8 @@ type Window interface {
 	OnUpdate()
 	Width() uint
 	Height() uint
-	SetEventCallback(EventCallbackFunc)
-	SetVSync(bool)
+	SetEventCallback(eventCallbackFunction EventCallbackFunc)
+	SetVSync(enabled bool)
 	VSync() bool
 	GetNativeWindow() unsafe.Pointer
 	Delete()
