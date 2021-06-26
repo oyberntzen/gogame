@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 	"github.com/oyberntzen/gogame/ggevent"
 	"github.com/oyberntzen/gogame/ggrenderer"
 )
@@ -53,6 +54,8 @@ func getWindowData(id int) *WindowData {
 }
 
 func NewWindow(props ggcore.WindowProps) ggcore.Window {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	window := WindowsWindow{}
 	window.init(props)
 	return &window
@@ -74,6 +77,8 @@ func (window *WindowsWindow) SetEventCallback(function ggcore.EventCallbackFunc)
 }
 
 func (window *WindowsWindow) SetVSync(enabled bool) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	if enabled {
 		glfw.SwapInterval(1)
 	} else {
@@ -91,6 +96,8 @@ func (window *WindowsWindow) GetNativeWindow() unsafe.Pointer {
 }
 
 func (window *WindowsWindow) init(props ggcore.WindowProps) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	window.data = WindowData{Title: props.Title, Width: props.Width, Height: props.Height}
 	window.SetEventCallback(func(event ggevent.Event) {
 		ggcore.CoreWarn("Event callback function not defined")
@@ -193,5 +200,7 @@ func (window *WindowsWindow) init(props ggcore.WindowProps) {
 }
 
 func (window *WindowsWindow) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	window.window.Destroy()
 }

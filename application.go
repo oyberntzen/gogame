@@ -3,6 +3,7 @@ package gogame
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 	"github.com/oyberntzen/gogame/ggevent"
 	"github.com/oyberntzen/gogame/ggimgui"
 	"github.com/oyberntzen/gogame/ggrenderer"
@@ -24,11 +25,14 @@ type CoreApplication struct {
 }
 
 func newCoreApplication(clientApp ClientApplication) *CoreApplication {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	props := ggcore.WindowProps{Title: "GoGame", Width: 1280, Height: 720}
 	app := CoreApplication{clientApp: clientApp, window: ggwindow.NewWindow(props), running: true}
 	ggcore.SetApp(&app)
 
 	app.window.SetEventCallback(app.onEvent)
+	app.window.SetVSync(true)
 
 	ggrenderer.RendererInit()
 
@@ -39,10 +43,14 @@ func newCoreApplication(clientApp ClientApplication) *CoreApplication {
 }
 
 func (app *CoreApplication) PushLayer(layer ggcore.Layer) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	app.layerStack.PushLayer(layer)
 }
 
 func (app *CoreApplication) PushOverlay(layer ggcore.Layer) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	app.layerStack.PushOverlay(layer)
 }
 
@@ -51,6 +59,8 @@ func (app *CoreApplication) GetWindow() ggcore.Window {
 }
 
 func (app *CoreApplication) run() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	app.clientApp.Init(app)
 
 	for app.running {
@@ -77,6 +87,8 @@ func (app *CoreApplication) run() {
 }
 
 func (app *CoreApplication) onEvent(event ggevent.Event) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	dispatcher := ggevent.EventDispatcher{Event: event}
 
 	dispatcher.DispatchWindowClose(app.onWindowClose)
@@ -96,6 +108,8 @@ func (app *CoreApplication) onWindowClose(event *ggevent.WindowCloseEvent) bool 
 }
 
 func (app *CoreApplication) onWindowResize(event *ggevent.WindowResizeEvent) bool {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	if event.Width() == 0 || event.Height() == 0 {
 		app.minimized = true
 		return false

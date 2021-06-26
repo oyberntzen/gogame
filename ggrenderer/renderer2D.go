@@ -4,6 +4,7 @@ import (
 	"unsafe"
 
 	"github.com/EngoEngine/glm"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 var (
@@ -13,15 +14,18 @@ var (
 )
 
 type Quad2D struct {
-	Position          *glm.Vec2
-	Z                 float32
-	Size              *glm.Vec2
-	Color             *glm.Vec4
-	UseColorOnTexture bool
-	Texture           Texture
+	Position     *glm.Vec2
+	Z            float32
+	Size         *glm.Vec2
+	Rotation     float32
+	Color        *glm.Vec4
+	TintTexture  bool
+	Texture      Texture
+	TilingFactor float32
 }
 
 func Renderer2DInit() {
+	defer ggdebug.Stop(ggdebug.Start())
 
 	vertexBuffer := NewVertexBuffer([]float32{
 		-0.5, -0.5, 0, 0, 0,
@@ -70,12 +74,13 @@ func Renderer2DInit() {
 
 	uniform vec4 u_Color;
 	uniform sampler2D u_Texture;
+	uniform float u_TilingFactor;
 
 	in vec2 v_TexCoord;
 
 	void main() 
 	{
-		color = texture(u_Texture, v_TexCoord) * u_Color;
+		color = texture(u_Texture, v_TexCoord * u_TilingFactor) * u_Color;
 	}
 	`
 
@@ -83,21 +88,27 @@ func Renderer2DInit() {
 }
 
 func Renderer2DBeginShutdown() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	quadVertexArray.Delete()
 }
 
 func Renderer2DBeginScene(camera *OrthographicCamera) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	textureShader.Bind()
 	textureShader.(*OpenGLShader).UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix())
 	textureShader.(*OpenGLShader).UploadUniformInt("u_Texture", 0)
 }
 
 func Renderer2DEndScene() {
-
+	defer ggdebug.Stop(ggdebug.Start())
 }
 
 func Renderer2DDrawQuad(quad *Quad2D) {
-	if quad.Texture == nil || quad.UseColorOnTexture {
+	defer ggdebug.Stop(ggdebug.Start())
+
+	if quad.Texture == nil || quad.TintTexture {
 		textureShader.(*OpenGLShader).UploadUniformFloat4("u_Color", quad.Color)
 	} else {
 		textureShader.(*OpenGLShader).UploadUniformFloat4("u_Color", &glm.Vec4{1, 1, 1, 1})
@@ -109,9 +120,20 @@ func Renderer2DDrawQuad(quad *Quad2D) {
 		quad.Texture.Bind(0)
 	}
 
+	if quad.TilingFactor == 0 {
+		textureShader.(*OpenGLShader).UploadUniformFloat("u_TilingFactor", 1)
+	} else {
+		textureShader.(*OpenGLShader).UploadUniformFloat("u_TilingFactor", quad.TilingFactor)
+	}
+
 	transform := glm.Translate3D(quad.Position[0], quad.Position[1], quad.Z)
+	if quad.Rotation != 0 {
+		rotation := glm.HomogRotate3DZ(glm.DegToRad(quad.Rotation))
+		transform.Mul4With(&rotation)
+	}
 	scale := glm.Scale3D(quad.Size[0], quad.Size[1], 1)
 	transform.Mul4With(&scale)
+
 	textureShader.(*OpenGLShader).UploadUniformMat4("u_Transform", &transform)
 
 	RenderCommandDrawIndexed(quadVertexArray)

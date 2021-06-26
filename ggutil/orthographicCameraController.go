@@ -4,6 +4,7 @@ import (
 	"github.com/EngoEngine/glm"
 	"github.com/EngoEngine/math"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 	"github.com/oyberntzen/gogame/ggevent"
 	"github.com/oyberntzen/gogame/ggrenderer"
 )
@@ -18,6 +19,8 @@ type OrthographicCameraController struct {
 }
 
 func NewOrthographicCameraController(aspectRatio float32, rotation bool) *OrthographicCameraController {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	zoomLevel := float32(1)
 	controller := OrthographicCameraController{
 		camera:                 ggrenderer.NewOrthographicCamera(-aspectRatio*zoomLevel, aspectRatio*zoomLevel, -zoomLevel, zoomLevel),
@@ -33,6 +36,8 @@ func NewOrthographicCameraController(aspectRatio float32, rotation bool) *Orthog
 }
 
 func (controller *OrthographicCameraController) OnUpdate(ts ggcore.Timestep) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	if ggcore.IsKeyPressed(ggevent.KeyA) {
 		controller.cameraPosition[0] -= math.Cos(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
 		controller.cameraPosition[1] -= math.Sin(glm.DegToRad(controller.cameraRotation)) * controller.cameraTranslationSpeed * ts.GetSeconds()
@@ -63,6 +68,8 @@ func (controller *OrthographicCameraController) OnUpdate(ts ggcore.Timestep) {
 }
 
 func (controller *OrthographicCameraController) OnEvent(event ggevent.Event) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	dispatcher := ggevent.EventDispatcher{Event: event}
 	dispatcher.DispatchMouseScrolled(controller.onMouseScrolled)
 	dispatcher.DispatchWindowResize(controller.onWindowResize)

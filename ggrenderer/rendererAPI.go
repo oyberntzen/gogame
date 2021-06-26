@@ -4,6 +4,7 @@ import (
 	"github.com/EngoEngine/glm"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -52,6 +53,8 @@ func newOpenGLRendererAPI() *openGLRendererAPI {
 }
 
 func (rendererAPI *openGLRendererAPI) Init() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
@@ -59,18 +62,26 @@ func (rendererAPI *openGLRendererAPI) Init() {
 }
 
 func (rendererAPI *openGLRendererAPI) SetClearColor(color *glm.Vec4) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.ClearColor(color[0], color[1], color[2], color[3])
 }
 
 func (rendererAPI *openGLRendererAPI) Clear() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
 func (rendererAPI *openGLRendererAPI) DrawIndexed(vertexArray VertexArray) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DrawElements(gl.TRIANGLES, int32(vertexArray.GetIndexBuffer().GetCount()), gl.UNSIGNED_INT, nil)
 }
 
 func (rendererAPI *openGLRendererAPI) SetViewport(x, y, width, height uint32) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.Viewport(int32(x), int32(y), int32(width), int32(height))
 }
 

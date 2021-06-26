@@ -9,6 +9,7 @@ import (
 	"github.com/EngoEngine/glm"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -47,11 +48,15 @@ type ShaderLibrary struct {
 }
 
 func NewShaderLibrary() *ShaderLibrary {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	library := ShaderLibrary{shaders: make(map[string]Shader)}
 	return &library
 }
 
 func (library *ShaderLibrary) Add(shader Shader) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	name := shader.GetName()
 	if _, ok := library.shaders[name]; ok {
 		ggcore.CoreError("Shader %v already exists")
@@ -60,12 +65,16 @@ func (library *ShaderLibrary) Add(shader Shader) {
 }
 
 func (library *ShaderLibrary) LoadFromPath(path string) Shader {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	shader := newOpenGLShaderFromPath(path)
 	library.Add(shader)
 	return shader
 }
 
 func (library *ShaderLibrary) Get(name string) Shader {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	if shader, ok := library.shaders[name]; ok {
 		return shader
 	}
@@ -86,6 +95,8 @@ type OpenGLShader struct {
 const typeToken = "#type"
 
 func newOpenGLShaderFromSrc(name, vertexSrc, fragmentSrc string) *OpenGLShader {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	shaderSources := make(map[uint32]string)
 
 	shaderSources[gl.VERTEX_SHADER] = vertexSrc
@@ -97,6 +108,8 @@ func newOpenGLShaderFromSrc(name, vertexSrc, fragmentSrc string) *OpenGLShader {
 }
 
 func newOpenGLShaderFromPath(path string) *OpenGLShader {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	file, err := os.Open(path)
 	ggcore.CoreCheckError(err)
 	scanner := bufio.NewScanner(file)
@@ -135,10 +148,14 @@ func shaderTypeFromString(shaderType string) uint32 {
 }
 
 func (shader *OpenGLShader) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DeleteProgram(shader.rendererID)
 }
 
 func (shader *OpenGLShader) Bind() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.UseProgram(shader.rendererID)
 }
 

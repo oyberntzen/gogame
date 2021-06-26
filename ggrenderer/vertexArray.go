@@ -3,6 +3,7 @@ package ggrenderer
 import (
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -69,16 +70,22 @@ func ShaderDataTypeToOpenGLType(dataType ShaderDataType) uint32 {
 }
 
 func newOpenGLVertexArray() *openGLVertexArray {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	vertexArray := openGLVertexArray{}
 	gl.CreateVertexArrays(1, &vertexArray.rendererID)
 	return &vertexArray
 }
 
 func (vertexArray *openGLVertexArray) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DeleteVertexArrays(1, &vertexArray.rendererID)
 }
 
 func (vertexArray *openGLVertexArray) Bind() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.BindVertexArray(vertexArray.rendererID)
 }
 
@@ -87,6 +94,8 @@ func (vertexArray *openGLVertexArray) Unbind() {
 }
 
 func (vertexArray *openGLVertexArray) AddVertexBuffer(vertexBuffer VertexBuffer) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	layout := vertexBuffer.GetLayout()
 	if len(*layout.GetElements()) == 0 {
 		ggcore.CoreError("Vertex buffer layout is empty")

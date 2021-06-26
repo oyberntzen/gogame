@@ -4,6 +4,7 @@ import (
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -26,6 +27,8 @@ func NewOpenGLContext(window *glfw.Window) *OpenGLContext {
 }
 
 func (context *OpenGLContext) Init() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	context.window.MakeContextCurrent()
 	ggcore.CoreCheckError(gl.Init())
 
@@ -36,6 +39,8 @@ func (context *OpenGLContext) Init() {
 }
 
 func (context *OpenGLContext) SwapBuffers() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	context.window.SwapBuffers()
 }
 

@@ -2,6 +2,7 @@ package ggrenderer
 
 import (
 	"github.com/EngoEngine/glm"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 type OrthographicCamera struct {
@@ -14,6 +15,8 @@ type OrthographicCamera struct {
 }
 
 func NewOrthographicCamera(left, right, bottom, top float32) *OrthographicCamera {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	camera := OrthographicCamera{
 		projectionMatrix: glm.Ortho2D(left, right, bottom, top),
 		viewMatrix:       glm.Ident4(),
@@ -23,17 +26,23 @@ func NewOrthographicCamera(left, right, bottom, top float32) *OrthographicCamera
 }
 
 func (camera *OrthographicCamera) SetProjection(left, right, bottom, top float32) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	camera.projectionMatrix = glm.Ortho2D(left, right, bottom, top)
 	camera.viewProjectionMatrix = camera.projectionMatrix.Mul4(&camera.viewMatrix)
 }
 
 func (camera *OrthographicCamera) SetPosition(position *glm.Vec3) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	camera.position = *position
 	camera.recalculateViewMatrix()
 }
 func (camera *OrthographicCamera) GetPosition() *glm.Vec3 { return &camera.position }
 
 func (camera *OrthographicCamera) SetRotation(rotation float32) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	camera.rotation = glm.DegToRad(rotation)
 	camera.recalculateViewMatrix()
 }
@@ -46,6 +55,8 @@ func (camera *OrthographicCamera) GetViewProjectionMatrix() *glm.Mat4 {
 }
 
 func (camera *OrthographicCamera) recalculateViewMatrix() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	position := glm.Translate3D(camera.position.X(), camera.position.Y(), camera.position.Z())
 	rotation := glm.HomogRotate3DZ(camera.rotation)
 	transform := position.Mul4(&rotation)

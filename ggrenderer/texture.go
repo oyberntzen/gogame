@@ -9,6 +9,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -54,6 +55,8 @@ type openGLTexture2D struct {
 }
 
 func newOpenGLTexture2DFromPath(path string) *openGLTexture2D {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	texture := openGLTexture2D{path: path}
 
 	reader, err := os.Open(path)
@@ -86,6 +89,8 @@ func newOpenGLTexture2DFromPath(path string) *openGLTexture2D {
 }
 
 func newOpenGLTexture2DEmpty(width, height uint32) *openGLTexture2D {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	texture := openGLTexture2D{
 		width:  width,
 		height: height,
@@ -103,6 +108,8 @@ func newOpenGLTexture2DEmpty(width, height uint32) *openGLTexture2D {
 }
 
 func (texture *openGLTexture2D) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DeleteTextures(1, &texture.rendererID)
 }
 
@@ -111,10 +118,14 @@ func (texture *openGLTexture2D) GetWidth() uint32 { return texture.width }
 func (texture *openGLTexture2D) GetHeight() uint32 { return texture.height }
 
 func (texture *openGLTexture2D) SetData(data unsafe.Pointer) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.TextureSubImage2D(texture.rendererID, 0, 0, 0, int32(texture.width), int32(texture.height), gl.RGBA, gl.UNSIGNED_BYTE, data)
 }
 
 func (texture *openGLTexture2D) Bind(slot uint32) {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.BindTextureUnit(slot, texture.rendererID)
 }
 

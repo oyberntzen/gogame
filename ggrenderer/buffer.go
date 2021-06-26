@@ -3,6 +3,7 @@ package ggrenderer
 import (
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/oyberntzen/gogame/ggcore"
+	"github.com/oyberntzen/gogame/ggdebug"
 )
 
 //------------- Abstract -------------
@@ -186,6 +187,8 @@ type openGLIndexBuffer struct {
 }
 
 func newOpenGLVertexBuffer(vertices []float32) *openGLVertexBuffer {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	vertexBuffer := openGLVertexBuffer{}
 
 	gl.CreateBuffers(1, &vertexBuffer.rendererID)
@@ -196,10 +199,14 @@ func newOpenGLVertexBuffer(vertices []float32) *openGLVertexBuffer {
 }
 
 func (vertexBuffer *openGLVertexBuffer) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DeleteBuffers(1, &vertexBuffer.rendererID)
 }
 
 func (vertexBuffer *openGLVertexBuffer) Bind() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.BindBuffer(gl.ARRAY_BUFFER, vertexBuffer.rendererID)
 }
 
@@ -216,6 +223,8 @@ func (vertexBuffer *openGLVertexBuffer) GetLayout() *BufferLayout {
 }
 
 func newOpenGLIndexBuffer(indices []uint32) *openGLIndexBuffer {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	indexBuffer := openGLIndexBuffer{}
 
 	gl.CreateBuffers(1, &indexBuffer.rendererID)
@@ -228,14 +237,20 @@ func newOpenGLIndexBuffer(indices []uint32) *openGLIndexBuffer {
 }
 
 func (indexBuffer *openGLIndexBuffer) Delete() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.DeleteBuffers(1, &indexBuffer.rendererID)
 }
 
 func (indexBuffer *openGLIndexBuffer) Bind() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer.rendererID)
 }
 
 func (indexBuffer *openGLIndexBuffer) Unbind() {
+	defer ggdebug.Stop(ggdebug.Start())
+
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 }
 
