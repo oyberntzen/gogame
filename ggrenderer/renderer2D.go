@@ -25,6 +25,8 @@ var (
 
 	textureSlots     [maxTextureSlots]Texture
 	textureSlotIndex uint32 = 1
+
+	quadVertexPositions [4]glm.Vec4
 )
 
 type Quad2D struct {
@@ -50,10 +52,11 @@ func NewQuad2D() *Quad2D {
 }
 
 type quadVertex struct {
-	Position glm.Vec3
-	Color    glm.Vec4
-	TexCoord glm.Vec2
-	TexIndex float32
+	Position     glm.Vec3
+	Color        glm.Vec4
+	TexCoord     glm.Vec2
+	TexIndex     float32
+	TilingFactor float32
 }
 
 func Renderer2DInit() {
@@ -67,6 +70,7 @@ func Renderer2DInit() {
 		NewBufferElement(ShaderDataTypeFloat4, "a_Color", false),
 		NewBufferElement(ShaderDataTypeFloat2, "a_TexCoord", false),
 		NewBufferElement(ShaderDataTypeFloat, "a_TexIndex", false),
+		NewBufferElement(ShaderDataTypeFloat, "a_TilingFactor", false),
 	}))
 
 	indices := make([]uint32, maxIndices)
@@ -99,18 +103,22 @@ func Renderer2DInit() {
 	layout(location = 1) in vec4  a_Color;
 	layout(location = 2) in vec2  a_TexCoord;
 	layout(location = 3) in float a_TexIndex;
+	layout(location = 4) in float a_TilingFactor;
 
 	uniform mat4 u_ViewProjection;
 
 	out vec4  v_Color;
 	out vec2  v_TexCoord;
 	out float v_TexIndex;
+	out float v_TilingFactor;
 
 	void main() 
 	{
 		v_Color = a_Color;
 		v_TexCoord = a_TexCoord;
-		v_TexIndex = float(a_TexIndex);
+		v_TexIndex = a_TexIndex;
+		v_TilingFactor = a_TilingFactor;
+		
 		gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 	}
 	`
@@ -125,11 +133,11 @@ func Renderer2DInit() {
 	in vec4  v_Color;
 	in vec2  v_TexCoord;
 	in float v_TexIndex;
+	in float v_TilingFactor;
 
 	void main() 
 	{
-		color = texture(u_Textures[int(v_TexIndex)], v_TexCoord) * v_Color;
-		//color = vec4(v_TexIndex, 1, 1, 1);
+		color = texture(u_Textures[int(v_TexIndex)], v_TexCoord * v_TilingFactor) * v_Color;
 	}
 	`
 
@@ -142,6 +150,11 @@ func Renderer2DInit() {
 
 	textureShader.Bind()
 	textureShader.(*OpenGLShader).UploadUniformIntArray("u_Textures", samplers)
+
+	quadVertexPositions[0] = glm.Vec4{-0.5, -0.5, 0, 1}
+	quadVertexPositions[1] = glm.Vec4{0.5, -0.5, 0, 1}
+	quadVertexPositions[2] = glm.Vec4{0.5, 0.5, 0, 1}
+	quadVertexPositions[3] = glm.Vec4{-0.5, 0.5, 0, 1}
 }
 
 func Renderer2DShutdown() {
@@ -188,65 +201,51 @@ func Renderer2DDrawQuad(quad *Quad2D) {
 		}
 	}
 
+	transform := glm.Translate3D(quad.Position.X(), quad.Position.Y(), quad.Z)
+	scale := glm.Scale3D(quad.Size.X(), quad.Size.Y(), 1)
+	transform.Mul4With(&scale)
+	if quad.Rotation != 0 {
+		rotation := glm.HomogRotate3DZ(quad.Rotation)
+		transform.Mul4With(&rotation)
+	}
+
+	position := transform.Mul4x1(&quadVertexPositions[0])
 	quadVertices = append(quadVertices, quadVertex{
-		Position: quad.Position.Vec3(quad.Z),
-		Color:    *quad.Color,
-		TexCoord: glm.Vec2{0, 0},
-		TexIndex: float32(textureIndex),
+		Position:     glm.Vec3{position.X(), position.Y(), quad.Z},
+		Color:        *quad.Color,
+		TexCoord:     glm.Vec2{0, 0},
+		TexIndex:     float32(textureIndex),
+		TilingFactor: quad.TilingFactor,
 	})
 
+	position = transform.Mul4x1(&quadVertexPositions[1])
 	quadVertices = append(quadVertices, quadVertex{
-		Position: glm.Vec3{quad.Position.X() + quad.Size.X(), quad.Position.Y(), quad.Z},
-		Color:    *quad.Color,
-		TexCoord: glm.Vec2{1, 0},
-		TexIndex: float32(textureIndex),
+		Position:     glm.Vec3{position.X(), position.Y(), quad.Z},
+		Color:        *quad.Color,
+		TexCoord:     glm.Vec2{1, 0},
+		TexIndex:     float32(textureIndex),
+		TilingFactor: quad.TilingFactor,
 	})
 
+	position = transform.Mul4x1(&quadVertexPositions[2])
 	quadVertices = append(quadVertices, quadVertex{
-		Position: glm.Vec3{quad.Position.X() + quad.Size.X(), quad.Position.Y() + quad.Size.Y(), quad.Z},
-		Color:    *quad.Color,
-		TexCoord: glm.Vec2{1, 1},
-		TexIndex: float32(textureIndex),
+		Position:     glm.Vec3{position.X(), position.Y(), quad.Z},
+		Color:        *quad.Color,
+		TexCoord:     glm.Vec2{1, 1},
+		TexIndex:     float32(textureIndex),
+		TilingFactor: quad.TilingFactor,
 	})
 
+	position = transform.Mul4x1(&quadVertexPositions[3])
 	quadVertices = append(quadVertices, quadVertex{
-		Position: glm.Vec3{quad.Position.X(), quad.Position.Y() + quad.Size.Y(), quad.Z},
-		Color:    *quad.Color,
-		TexCoord: glm.Vec2{0, 1},
-		TexIndex: float32(textureIndex),
+		Position:     glm.Vec3{position.X(), position.Y(), quad.Z},
+		Color:        *quad.Color,
+		TexCoord:     glm.Vec2{0, 1},
+		TexIndex:     float32(textureIndex),
+		TilingFactor: quad.TilingFactor,
 	})
 
 	quadIndexCount += 6
-
-	/*if quad.Texture == nil || quad.TintTexture {
-		textureShader.(*OpenGLShader).UploadUniformFloat4("u_Color", quad.Color)
-	} else {
-		textureShader.(*OpenGLShader).UploadUniformFloat4("u_Color", &glm.Vec4{1, 1, 1, 1})
-	}
-
-	if quad.Texture == nil {
-		whiteTexture.Bind(0)
-	} else {
-		quad.Texture.Bind(0)
-	}
-
-	if quad.TilingFactor == 0 {
-		textureShader.(*OpenGLShader).UploadUniformFloat("u_TilingFactor", 1)
-	} else {
-		textureShader.(*OpenGLShader).UploadUniformFloat("u_TilingFactor", quad.TilingFactor)
-	}
-
-	transform := glm.Translate3D(quad.Position[0], quad.Position[1], quad.Z)
-	if quad.Rotation != 0 {
-		rotation := glm.HomogRotate3DZ(glm.DegToRad(quad.Rotation))
-		transform.Mul4With(&rotation)
-	}
-	scale := glm.Scale3D(quad.Size[0], quad.Size[1], 1)
-	transform.Mul4With(&scale)
-
-	textureShader.(*OpenGLShader).UploadUniformMat4("u_Transform", &transform)
-
-	RenderCommandDrawIndexed(quadVertexArray)*/
 }
 
 func renderer2DFlush() {
