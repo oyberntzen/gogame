@@ -172,6 +172,11 @@ func (shader *OpenGLShader) UploadUniformInt(name string, value int32) {
 	gl.Uniform1i(location, value)
 }
 
+func (shader *OpenGLShader) UploadUniformIntArray(name string, values []int32) {
+	location := gl.GetUniformLocation(shader.rendererID, gl.Str(name+"\x00"))
+	gl.Uniform1iv(location, int32(len(values)), &values[0])
+}
+
 func (shader *OpenGLShader) UploadUniformFloat(name string, value float32) {
 	location := gl.GetUniformLocation(shader.rendererID, gl.Str(name+"\x00"))
 	gl.Uniform1f(location, value)

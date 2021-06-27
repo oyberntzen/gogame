@@ -44,6 +44,7 @@ type VertexBuffer interface {
 	Unbind()
 	SetLayout(layout *BufferLayout)
 	GetLayout() (layout *BufferLayout)
+	SetData(data interface{}, size uint32)
 }
 
 type IndexBuffer interface {
@@ -161,6 +162,17 @@ func NewVertexBuffer(vertices []float32) VertexBuffer {
 	return nil
 }
 
+func NewEmptyVertexBuffer(size uint32) VertexBuffer {
+	switch CurrentAPI() {
+	case RendererAPINone:
+		ggcore.CoreError("RendererAPINone is not supported")
+	case RendererAPIOpenGL:
+		return newOpenGLEmptyVertexBuffer(size)
+	}
+	ggcore.CoreError("Unknown renderer API")
+	return nil
+}
+
 func NewIndexBuffer(indices []uint32) IndexBuffer {
 	switch CurrentAPI() {
 	case RendererAPINone:
@@ -181,11 +193,6 @@ type openGLVertexBuffer struct {
 	layout     *BufferLayout
 }
 
-type openGLIndexBuffer struct {
-	rendererID uint32
-	count      uint32
-}
-
 func newOpenGLVertexBuffer(vertices []float32) *openGLVertexBuffer {
 	defer ggdebug.Stop(ggdebug.Start())
 
@@ -194,6 +201,18 @@ func newOpenGLVertexBuffer(vertices []float32) *openGLVertexBuffer {
 	gl.CreateBuffers(1, &vertexBuffer.rendererID)
 	vertexBuffer.Bind()
 	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+
+	return &vertexBuffer
+}
+
+func newOpenGLEmptyVertexBuffer(size uint32) *openGLVertexBuffer {
+	defer ggdebug.Stop(ggdebug.Start())
+
+	vertexBuffer := openGLVertexBuffer{}
+
+	gl.CreateBuffers(1, &vertexBuffer.rendererID)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vertexBuffer.rendererID)
+	gl.BufferData(gl.ARRAY_BUFFER, int(size), nil, gl.DYNAMIC_DRAW)
 
 	return &vertexBuffer
 }
@@ -220,6 +239,16 @@ func (vertexBuffer *openGLVertexBuffer) SetLayout(layout *BufferLayout) {
 
 func (vertexBuffer *openGLVertexBuffer) GetLayout() *BufferLayout {
 	return vertexBuffer.layout
+}
+
+func (vertexBuffer *openGLVertexBuffer) SetData(data interface{}, size uint32) {
+	gl.BindBuffer(gl.ARRAY_BUFFER, vertexBuffer.rendererID)
+	gl.BufferSubData(gl.ARRAY_BUFFER, 0, int(size), gl.Ptr(data))
+}
+
+type openGLIndexBuffer struct {
+	rendererID uint32
+	count      uint32
 }
 
 func newOpenGLIndexBuffer(indices []uint32) *openGLIndexBuffer {

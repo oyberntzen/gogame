@@ -30,7 +30,7 @@ func RendererSubmit(shader Shader, vertexArray VertexArray, transform *glm.Mat4)
 	shader.(*OpenGLShader).UploadUniformMat4("u_Transform", transform)
 
 	vertexArray.Bind()
-	RenderCommandDrawIndexed(vertexArray)
+	RenderCommandDrawIndexed(vertexArray, 0)
 }
 
 func RendererOnWindowResize(width, height uint32) {

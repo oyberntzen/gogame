@@ -9,7 +9,7 @@ require (
 	github.com/go-gl/gl v0.0.0-20210501111010-69f74958bac0
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210410170116-ea3d685f79fb
 	github.com/inkyblackness/imgui-go/v4 v4.0.0-00010101000000-000000000000
-	github.com/loov/hrtime v1.0.3 // indirect
+	github.com/loov/hrtime v1.0.3
 	github.com/stretchr/testify v1.7.0 // indirect
 	gopkg.in/gookit/color.v1 v1.1.6
 )

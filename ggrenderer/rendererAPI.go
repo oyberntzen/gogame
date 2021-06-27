@@ -13,7 +13,7 @@ type RendererAPI interface {
 	Init()
 	SetClearColor(color *glm.Vec4)
 	Clear()
-	DrawIndexed(vertexArray VertexArray)
+	DrawIndexed(vertexArray VertexArray, indexCount uint32)
 	SetViewport(x uint32, y uint32, width uint32, height uint32)
 }
 
@@ -73,10 +73,14 @@ func (rendererAPI *openGLRendererAPI) Clear() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
-func (rendererAPI *openGLRendererAPI) DrawIndexed(vertexArray VertexArray) {
+func (rendererAPI *openGLRendererAPI) DrawIndexed(vertexArray VertexArray, indexCount uint32) {
 	defer ggdebug.Stop(ggdebug.Start())
 
-	gl.DrawElements(gl.TRIANGLES, int32(vertexArray.GetIndexBuffer().GetCount()), gl.UNSIGNED_INT, nil)
+	if indexCount == 0 {
+		gl.DrawElements(gl.TRIANGLES, int32(vertexArray.GetIndexBuffer().GetCount()), gl.UNSIGNED_INT, nil)
+	} else {
+		gl.DrawElements(gl.TRIANGLES, int32(indexCount), gl.UNSIGNED_INT, nil)
+	}
 }
 
 func (rendererAPI *openGLRendererAPI) SetViewport(x, y, width, height uint32) {

@@ -20,8 +20,8 @@ func RenderCommandClear() {
 	rendererAPI.Clear()
 }
 
-func RenderCommandDrawIndexed(vertexArray VertexArray) {
-	rendererAPI.DrawIndexed(vertexArray)
+func RenderCommandDrawIndexed(vertexArray VertexArray, indexCount uint32) {
+	rendererAPI.DrawIndexed(vertexArray, indexCount)
 }
 
 func RenderCommandSetViewport(x, y, width, height uint32) {
