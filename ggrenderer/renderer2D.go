@@ -27,7 +27,17 @@ var (
 	textureSlotIndex uint32 = 1
 
 	quadVertexPositions [4]glm.Vec4
+
+	stats Statistics
 )
+
+type Statistics struct {
+	DrawCalls uint32
+	QuadCount uint32
+}
+
+func (stats Statistics) GetTotalVertexCount() uint32 { return stats.QuadCount * 4 }
+func (stats Statistics) GetTotalIndexCount() uint32  { return stats.QuadCount * 6 }
 
 type Quad2D struct {
 	Position     *glm.Vec2
@@ -170,21 +180,23 @@ func Renderer2DBeginScene(camera *OrthographicCamera) {
 	textureShader.(*OpenGLShader).UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix())
 	textureShader.(*OpenGLShader).UploadUniformInt("u_Texture", 0)
 
-	quadVertices = quadVertices[0:0]
-	quadIndexCount = 0
-
-	textureSlotIndex = 1
+	reset()
 }
 
 func Renderer2DEndScene() {
 	defer ggdebug.Stop(ggdebug.Start())
 
 	quadVertexBuffer.SetData(quadVertices, uint32(unsafe.Sizeof(quadVertex{}))*uint32(len(quadVertices)))
-	renderer2DFlush()
+	flush()
 }
 
 func Renderer2DDrawQuad(quad *Quad2D) {
 	defer ggdebug.Stop(ggdebug.Start())
+
+	if quadIndexCount >= maxIndices {
+		Renderer2DEndScene()
+		reset()
+	}
 
 	var textureIndex uint32 = 0
 	if quad.Texture != nil {
@@ -246,13 +258,28 @@ func Renderer2DDrawQuad(quad *Quad2D) {
 	})
 
 	quadIndexCount += 6
+	stats.QuadCount++
 }
 
-func renderer2DFlush() {
+func Renderer2DResetStats() {
+	stats.DrawCalls = 0
+	stats.QuadCount = 0
+}
+func Renderer2DStats() Statistics { return stats }
+
+func flush() {
 	var i uint32
 	for i = 0; i < textureSlotIndex; i++ {
 		textureSlots[i].Bind(i)
 	}
 
 	RenderCommandDrawIndexed(quadVertexArray, quadIndexCount)
+	stats.DrawCalls++
+}
+
+func reset() {
+	quadVertices = quadVertices[0:0]
+	quadIndexCount = 0
+
+	textureSlotIndex = 1
 }

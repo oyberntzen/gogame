@@ -9,6 +9,13 @@ import (
 	"github.com/oyberntzen/gogame/ggrenderer"
 )
 
+type OrthographicCameraBounds struct {
+	Left, Right, Bottom, Top float32
+}
+
+func (bounds *OrthographicCameraBounds) Width() float32  { return bounds.Right - bounds.Left }
+func (bounds *OrthographicCameraBounds) Height() float32 { return bounds.Top - bounds.Bottom }
+
 type OrthographicCameraController struct {
 	camera                                                       *ggrenderer.OrthographicCamera
 	aspectRatio, zoomLevel                                       float32
@@ -16,6 +23,8 @@ type OrthographicCameraController struct {
 	cameraPosition                                               glm.Vec3
 	cameraRotation                                               float32
 	cameraTranslationSpeed, cameraRotationSpeed, cameraZoomSpeed float32
+
+	bounds OrthographicCameraBounds
 }
 
 func NewOrthographicCameraController(aspectRatio float32, rotation bool) *OrthographicCameraController {
@@ -30,6 +39,13 @@ func NewOrthographicCameraController(aspectRatio float32, rotation bool) *Orthog
 		cameraTranslationSpeed: 5,
 		cameraRotationSpeed:    180,
 		cameraZoomSpeed:        0.25,
+
+		bounds: OrthographicCameraBounds{
+			Left:   -aspectRatio * zoomLevel,
+			Right:  aspectRatio * zoomLevel,
+			Bottom: -zoomLevel,
+			Top:    zoomLevel,
+		},
 	}
 
 	return &controller
@@ -82,12 +98,30 @@ func (controller *OrthographicCameraController) GetCamera() *ggrenderer.Orthogra
 func (controller *OrthographicCameraController) onMouseScrolled(event *ggevent.MouseScrolledEvent) bool {
 	controller.zoomLevel -= event.OffsetY() * controller.cameraZoomSpeed
 	controller.zoomLevel = math.Max(controller.zoomLevel, controller.cameraZoomSpeed)
-	controller.camera.SetProjection(-controller.aspectRatio*controller.zoomLevel, controller.aspectRatio*controller.zoomLevel, -controller.zoomLevel, controller.zoomLevel)
+
+	controller.bounds = OrthographicCameraBounds{
+		Left:   -controller.aspectRatio * controller.zoomLevel,
+		Right:  controller.aspectRatio * controller.zoomLevel,
+		Bottom: -controller.zoomLevel,
+		Top:    controller.zoomLevel,
+	}
+	controller.camera.SetProjection(controller.bounds.Left, controller.bounds.Right, controller.bounds.Bottom, controller.bounds.Top)
 	return false
 }
 
 func (controller *OrthographicCameraController) onWindowResize(event *ggevent.WindowResizeEvent) bool {
 	controller.aspectRatio = float32(event.Width()) / float32(event.Height())
-	controller.camera.SetProjection(-controller.aspectRatio*controller.zoomLevel, controller.aspectRatio*controller.zoomLevel, -controller.zoomLevel, controller.zoomLevel)
+
+	controller.bounds = OrthographicCameraBounds{
+		Left:   -controller.aspectRatio * controller.zoomLevel,
+		Right:  controller.aspectRatio * controller.zoomLevel,
+		Bottom: -controller.zoomLevel,
+		Top:    controller.zoomLevel,
+	}
+	controller.camera.SetProjection(controller.bounds.Left, controller.bounds.Right, controller.bounds.Bottom, controller.bounds.Top)
 	return false
+}
+
+func (controller *OrthographicCameraController) Bounds() *OrthographicCameraBounds {
+	return &controller.bounds
 }

@@ -1,3 +1,5 @@
+// +build profile
+
 package ggdebug
 
 import (
